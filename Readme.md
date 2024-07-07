@@ -55,7 +55,7 @@ A camada que faz a conexão e a ponte entre as APIs e aplicação. Seria o níve
 
 Ele responderá às requisições em http://localhost:3001.
 
--   Passo 2 - Executar a aplicação FRONT do projeto:
+-   Passo 2 - Executar a aplicação client-web do projeto:
 
 ```console
 > cd client-web
