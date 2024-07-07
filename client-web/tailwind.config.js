@@ -19,11 +19,10 @@ export default {
 		},
 		extend: {
 			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
 				background: 'var(--background)',
+				border: 'hsl(var(--border))',
 				foreground: 'hsl(var(--foreground))',
+				input: 'hsl(var(--input))',
 				primary: {
 					DEFAULT: 'var(--primary)',
 					foreground: 'hsl(var(--primary-foreground))',

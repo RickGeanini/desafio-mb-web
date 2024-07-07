@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useFormik } from 'formik';
 
 // COMPONENTS
@@ -10,6 +10,9 @@ import RegistrationResumeForm from '@components/pages/registration/forms/resume/
 
 // INTERFACES
 import type { IRegisterPayload } from '@interfaces/registration';
+
+// SERVICES
+import RegistrationService from '@services/registration';
 
 // UTILS
 import { stepsNavigationConfig } from '@utils/navigation';
@@ -25,6 +28,7 @@ enum ERegistrationPageContainerSteps {
 // REGISTRATION PAGE CONTAINER
 const RegistrationPageContainer = () => {
 	/* State */
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [previousSteps, setPreviousSteps] = useState<ERegistrationPageContainerSteps[]>([]);
 	const [currentStep, setCurrentStep] = useState<ERegistrationPageContainerSteps>(
 		ERegistrationPageContainerSteps.EMAIL,
@@ -32,12 +36,6 @@ const RegistrationPageContainer = () => {
 
 	/* Vars */
 	const totalSteps = Object.values(ERegistrationPageContainerSteps).length;
-	const formik = useFormik({
-		initialValues: {} as IRegisterPayload,
-		onSubmit: values => {
-			console.log(values);
-		},
-	});
 	const nextStepByCurrentStep: Record<
 		ERegistrationPageContainerSteps,
 		ERegistrationPageContainerSteps | null
@@ -47,7 +45,6 @@ const RegistrationPageContainer = () => {
 		[ERegistrationPageContainerSteps.PASSWORD]: ERegistrationPageContainerSteps.RESUME,
 		[ERegistrationPageContainerSteps.RESUME]: null,
 	};
-
 	const pageNavigation = stepsNavigationConfig<ERegistrationPageContainerSteps>(
 		Object.values(ERegistrationPageContainerSteps),
 		currentStep,
@@ -55,6 +52,20 @@ const RegistrationPageContainer = () => {
 		setCurrentStep,
 		setPreviousSteps,
 	);
+	const registrationService: RegistrationService = useMemo(() => {
+		return new RegistrationService();
+	}, []);
+
+	const formik = useFormik({
+		initialValues: {} as IRegisterPayload,
+		onSubmit: async values => {
+			setIsLoading(true);
+			const result = await registrationService.saveRegister(values);
+			setIsLoading(false);
+
+			console.log({ result });
+		},
+	});
 
 	/* Handlers */
 	const backHandler = () => {
@@ -87,7 +98,20 @@ const RegistrationPageContainer = () => {
 		</>
 	);
 
+	// Lifecycle
+	useEffect(() => {
+		(async () => {
+			setIsLoading(true);
+			await registrationService.getRegister();
+			setIsLoading(false);
+		})();
+	}, []);
+
 	/* Render */
+	if (isLoading) {
+		return <div>Carregando informações...</div>;
+	}
+
 	return (
 		<UiPanel
 			backHandler={!!previousSteps.length ? () => backHandler() : undefined}
@@ -101,4 +125,5 @@ const RegistrationPageContainer = () => {
 		</UiPanel>
 	);
 };
+
 export default RegistrationPageContainer;
