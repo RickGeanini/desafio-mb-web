@@ -12,7 +12,14 @@ import { EPersonType, personTypeDescription } from '@enums/registration';
 import type { IRegisterPayload } from '@interfaces/registration';
 
 // UTILS
-import { clearDocument, formatDocument, isCnpjDocument, validateDocument } from '@utils/string';
+import {
+	clearDocument,
+	clearPhoneNumber,
+	formatDocument,
+	formatPhoneNumber,
+	isCnpjDocument,
+	validateDocument,
+} from '@utils/string';
 
 // REGISTRATION DATA FORM UTILS
 interface IRegistrationDataFormProps {
@@ -23,9 +30,10 @@ interface IRegistrationDataFormProps {
 // REGISTRATION DATA FORM
 const RegistrationDataForm = ({ hideTitle = false, formik }: IRegistrationDataFormProps) => {
 	/* Vars */
-	const { handleChange, setFieldError, setFieldValue, values } = formik;
+	const { errors, handleChange, setFieldError, setFieldValue, values } = formik;
 	const document = values.document ? formatDocument(values.document) : '';
 	const isLegalPerson = values.person_type === EPersonType.PJ;
+	const phone = values.phone ? formatPhoneNumber(values.phone) : '';
 
 	/* Handlers */
 	const changeDocumentHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +48,19 @@ const RegistrationDataForm = ({ hideTitle = false, formik }: IRegistrationDataFo
 		setFieldValue(name, newValue);
 	};
 
-	const onDocumentBlurHandler = async () => {
+	const changePhoneHandler = (e: ChangeEvent<HTMLInputElement>) => {
+		const insertedValue = e.currentTarget.value;
+		const name = e.currentTarget.name;
+		const newValue = clearPhoneNumber(insertedValue);
+
+		if (newValue.length > 14) {
+			return;
+		}
+
+		setFieldValue(name, newValue);
+	};
+
+	const onDocumentBlurHandler = () => {
 		const isDocumentValid = validateDocument(values.document);
 
 		if (isDocumentValid) {
@@ -49,10 +69,7 @@ const RegistrationDataForm = ({ hideTitle = false, formik }: IRegistrationDataFo
 
 		const document = clearDocument(values.document);
 
-		setFieldError(
-			'national_registration',
-			`Digite um ${isCnpjDocument(document) ? 'CNPJ' : 'CPF'} válido`,
-		);
+		setFieldError('document', `Digite um ${isCnpjDocument(document) ? 'CNPJ' : 'CPF'} válido`);
 	};
 
 	/* Render */
@@ -86,6 +103,7 @@ const RegistrationDataForm = ({ hideTitle = false, formik }: IRegistrationDataFo
 						onBlur={onDocumentBlurHandler}
 						onChange={changeDocumentHandler}
 						value={document}
+						error={errors.document}
 					/>
 				</div>
 				<div>
@@ -106,8 +124,9 @@ const RegistrationDataForm = ({ hideTitle = false, formik }: IRegistrationDataFo
 					<UiTextField
 						type="text"
 						name="phone"
-						onChange={handleChange}
-						value={values.phone}
+						onChange={changePhoneHandler}
+						value={phone}
+						maxLength={15}
 					/>
 				</div>
 			</div>

@@ -6,6 +6,14 @@ export const clearDocument = (value: string) => {
 	return value.replace(/[^\d]+/g, '');
 };
 
+export const clearPhoneNumber = (phoneNumber: string) => {
+	if (!phoneNumber) {
+		return '';
+	}
+
+	return phoneNumber.replace('-', '').replace('(', '').replace(')', '');
+};
+
 export const validateDocument = (document: string): boolean => {
 	const formattedDocument = clearDocument(document);
 
@@ -157,4 +165,10 @@ export const formatDocument = (value: string, hideNumbers: boolean = false): str
 	}
 
 	return parsedDocument.replace(/(\S{2})(\S{3})(\S{3})(\S{4})(\S{2})/g, '$1.$2.$3/$4-$5');
+};
+
+export const formatPhoneNumber = (phoneNumber: string): string => {
+	return phoneNumber.length === 12
+		? phoneNumber.replace(' ', '').replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4')
+		: phoneNumber.replace(' ', '').replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
 };

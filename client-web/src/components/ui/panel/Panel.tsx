@@ -5,6 +5,7 @@ import { UiButton } from '../button/Button';
 interface IUiPanelProps {
 	backHandler?: () => void;
 	children: ReactNode;
+	disableContinueButton: boolean;
 	continueButtonText?: string;
 	continueHandler: () => void;
 	title: ReactNode;
@@ -15,6 +16,7 @@ export const UiPanel = ({
 	backHandler,
 	continueButtonText = 'Continuar',
 	continueHandler,
+	disableContinueButton,
 	children,
 	title,
 }: IUiPanelProps) => {
@@ -29,7 +31,11 @@ export const UiPanel = ({
 						Voltar
 					</UiButton>
 				)}
-				<UiButton className="w-full" onClick={continueHandler}>
+				<UiButton
+					disabled={disableContinueButton}
+					className="w-full"
+					onClick={continueHandler}
+				>
 					{continueButtonText}
 				</UiButton>
 			</div>

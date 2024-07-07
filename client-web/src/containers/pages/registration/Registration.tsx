@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 
 // COMPONENTS
@@ -60,12 +60,20 @@ const RegistrationPageContainer = () => {
 		initialValues: {} as IRegisterPayload,
 		onSubmit: async values => {
 			setIsLoading(true);
-			const result = await registrationService.saveRegister(values);
+			const response = await registrationService.saveRegister(values);
 			setIsLoading(false);
 
-			console.log({ result });
+			if (response.ok) {
+				setCurrentStep(ERegistrationPageContainerSteps.EMAIL);
+				setPreviousSteps([]);
+				formik.setValues({} as IRegisterPayload);
+				return;
+			}
 		},
 	});
+	const disableContinueButton =
+		Object.values(formik.errors).some(value => !!value) ||
+		Object.values(formik.values).some(value => !value);
 
 	/* Handlers */
 	const backHandler = () => {
@@ -117,6 +125,7 @@ const RegistrationPageContainer = () => {
 			backHandler={!!previousSteps.length ? () => backHandler() : undefined}
 			continueHandler={continueHandler}
 			title={renderedPanelTitle}
+			disableContinueButton={disableContinueButton}
 			continueButtonText={
 				currentStep === ERegistrationPageContainerSteps.RESUME ? 'Cadastrar' : undefined
 			}

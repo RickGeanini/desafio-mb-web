@@ -23,7 +23,7 @@ interface IRegistrationDataFormProps {
 // REGISTRATION EMAIL FORM
 const RegistrationEmailForm = ({ hideTitle = false, formik }: IRegistrationDataFormProps) => {
 	/* Vars */
-	const { handleChange, setFieldError, setFieldValue, values } = formik;
+	const { errors, handleChange, setFieldError, setFieldValue, values } = formik;
 
 	/* Handlers */
 	const onEmailBlurHandler = () => {
@@ -66,6 +66,7 @@ const RegistrationEmailForm = ({ hideTitle = false, formik }: IRegistrationDataF
 				onBlur={onEmailBlurHandler}
 				onChange={handleChange}
 				value={values.email}
+				error={errors.email}
 			/>
 
 			{!hideTitle && <div className="flex mt-4 mb-6 space-x-4">{renderedPersonTypes}</div>}
