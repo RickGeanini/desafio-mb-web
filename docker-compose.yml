@@ -1,0 +1,22 @@
+version: "3"
+services:
+  servernode:
+      container_name: server
+      build:
+          context: ./server
+          dockerfile: Dockerfile
+      ports:
+        - "3001:3001"
+      volumes:
+        - ./server:/usr/src/app
+      image: image/server
+  clientweb:
+      container_name: clientweb
+      build:
+          context: ./client-web
+          dockerfile: Dockerfile
+      ports:
+        - "3000:3000"
+      volumes:
+        - ./client-web:/usr/src/app
+      image: image/clientweb
